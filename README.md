@@ -65,7 +65,7 @@ apt install -y ros-humble-teleop-twist-keyboard ros-humble-tf2-ros mesa-utils
 
 ```bash
 cd ~/ros2_ws/src
-git clone <URL_OVOG_REPOA> go2_sim
+git clone https://github.com/StelaPeris/go2_sim.git go2_sim
 ```
 
 Meshevi su iz [unitree_ros](https://github.com/unitreerobotics/unitree_ros) (BSD-3, Unitree Robotics).
@@ -92,27 +92,6 @@ source install/setup.bash
 > Ne miješati build sa i bez `--symlink-install` za isti paket. Ako colcon javi
 > `failed to create symbolic link ... Is a directory`, obriši `build/<paket>` i ponovi build.
 
-### 5. Grafika (laptopi s Intel Arrow Lake + NVIDIA)
-
-Mesa u Ubuntu 22.04 ne podržava novije Intel iGPU-ove (`MESA: warning: Driver does not support the 0x7d67 PCI ID`,
-`failed to load driver: iris`) pa Gazebo GUI pada. Rješenje je renderirati na NVIDIA kartici:
-
-```bash
-cat >> ~/.bashrc << 'EOF'
-
-# Gazebo renderira na NVIDIA GPU
-export __NV_PRIME_RENDER_OFFLOAD=1
-export __GLX_VENDOR_LIBRARY_NAME=nvidia
-export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
-EOF
-source ~/.bashrc
-
-glxinfo -B | grep -E "vendor|renderer"   # mora pisati NVIDIA
-```
-
-U Dockeru container mora imati pristup GPU-u (`--gpus all -e NVIDIA_DRIVER_CAPABILITIES=all`).
-Ako NVIDIA nije dostupna, privremeno rješenje je `export LIBGL_ALWAYS_SOFTWARE=1` (sporije).
-
 ## Pokretanje
 
 ### Pas u već pokrenutu simulaciju
@@ -137,11 +116,10 @@ Launch argumenti:
 ### Sve zajedno (tmuxinator)
 
 `startup/cf_go2.yml` je kopija `mrs_crazyflies` sessiona s dodanim prozorom za psa.
-Pokreće se iz `mrs_crazyflies/startup` foldera (zbog env varijabli `ENV_NAME`, `SPAWN_POSE_DOC`, `setup_name`),
-isto kao originalni session, samo s ovom putanjom:
+Pokreće se iz `go2_sim/startup` foldera, naredbom:
 
 ```bash
-tmuxinator start -p $(ros2 pkg prefix go2_sim)/share/go2_sim/startup/cf_go2.yml
+./start.sh
 ```
 
 ## Topici
